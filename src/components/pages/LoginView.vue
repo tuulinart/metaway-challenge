@@ -71,7 +71,7 @@ import "vue3-toastify/dist/index.css";
 import LoadingComponent from "../LoadingComponent.vue";
 
 export default {
-  name: "LoginPage",
+  name: "LoginView",
   components: {
     LoadingComponent,
   },
