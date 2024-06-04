@@ -1,10 +1,33 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <TheHeader v-if="tokenValid" @logout="logout()" />
+  <router-view />
 </template>
+
+<script>
+import TheHeader from "./components/TheHeader.vue";
+import { SAVE_TOKEN_STORAGE } from "./utils/utils.js";
+export default {
+  components: {
+    TheHeader
+  },
+  data() {
+    return {
+      tokenValid: "",
+    }
+  },
+  created() {
+    this.tokenValid = JSON.parse(localStorage.getItem(SAVE_TOKEN_STORAGE));
+  },
+
+  methods: {
+
+    logout() {
+      localStorage.removeItem(SAVE_TOKEN_STORAGE);
+      this.$router.push({ name: 'login' });
+    }
+  }
+};
+</script>
 
 <style>
 #app {
@@ -26,7 +49,7 @@ nav a {
 
 nav a.router-link-exact-active {
   color: #42b983;
-};
+}
 
 @import "~bootstrap/dist/css/bootstrap.css";
 </style>

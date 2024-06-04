@@ -3,41 +3,22 @@
     <div class="row d-flex justify-content-center">
       <div class="col-md-6">
         <div class="card px-5 py-5" id="form1">
-          <div class="form-data" v-if="!submitted">
+          <div class="form-data">
             <div class="forms-inputs mb-4">
               <span>Usuário</span>
-              <input
-                autocomplete="off"
-                type="text"
-                v-model="email"
-                :class="{
-                  'form-control': true,
-                }"
-                v-on:blur="emailBlured = true"
-              />
+              <input autocomplete="off" type="text" v-model="email" :class="{
+                'form-control': true,
+              }" @blur="emailBlured = true" />
             </div>
             <div class="forms-inputs mb-4">
               <span>Senha</span>
-              <input
-                autocomplete="off"
-                type="password"
-                v-model="password"
-                :class="{
-                  'form-control': true,
-                }"
-                v-on:blur="passwordBlured = true"
-              />
+              <input autocomplete="off" type="password" v-model="password" :class="{
+                'form-control': true,
+              }" @blur="passwordBlured = true" />
             </div>
 
-            <div
-              class="form-check mb-4 d-flex align-items-start justify-content-start gap-2"
-            >
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="flexCheckDefault"
-                v-model="checkSaveData"
-              />
+            <div class="form-check mb-4 d-flex align-items-start justify-content-start gap-2">
+              <input class="form-check-input" type="checkbox" id="flexCheckDefault" v-model="checkSaveData" />
               <label class="form-check-label" for="flexCheckDefault">
                 <i> Lembrar-me </i>
               </label>
@@ -45,16 +26,6 @@
 
             <div class="mb-3">
               <button @click="submit()" class="btn btn-dark w-100">Entrar</button>
-            </div>
-          </div>
-
-          <div class="success-data" v-else>
-            <div class="text-center d-flex flex-column">
-              <i class="bx bxs-badge-check"></i>
-              <span class="text-center fs-1"
-                >You have been logged in <br />
-                Successfully</span
-              >
             </div>
           </div>
         </div>
@@ -68,7 +39,8 @@
 <script>
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
-import LoadingComponent from "../LoadingComponent.vue";
+import LoadingComponent from "../components/LoadingComponent.vue";
+import { SAVE_DATA_PROFILE, SAVE_TOKEN_STORAGE } from "../utils/utils.js";
 
 export default {
   name: "LoginView",
@@ -81,7 +53,6 @@ export default {
       email: "",
       emailBlured: false,
       valid: false,
-      submitted: false,
       password: "",
       passwordBlured: false,
       checkSaveData: false,
@@ -113,20 +84,21 @@ export default {
     submit() {
       this.showLoading = true;
       setTimeout(() => {
-        this.showToast("warning", "erro");
+        this.showToast("success", "Sucesso ao entrar!");
+        if (this.checkSaveData) this.saveData();
+        localStorage.setItem(SAVE_TOKEN_STORAGE, JSON.stringify({ token: 'tokenaqui' }));
         this.showLoading = false;
+        this.$router.push({ name: 'home' });
       }, 4000);
       // this.validate();
       // if (this.valid) {
       //   this.submitted = true;
-      //   this.saveData();
+
       // }
     },
 
     saveData() {
-      if (this.checkSaveData) {
-        console.log(this.checkSaveData);
-      }
+      localStorage.setItem(SAVE_DATA_PROFILE, JSON.stringify({ email: this.email, password: this.password }));
     },
 
     showToast(type, message) {
@@ -155,13 +127,16 @@ export default {
 body {
   background: #000;
 }
+
 .card {
   border: none;
   height: 320px;
 }
+
 .forms-inputs {
   position: relative;
 }
+
 .forms-inputs span {
   position: absolute;
   top: -18px;
@@ -170,22 +145,27 @@ body {
   padding: 5px 10px;
   font-size: 15px;
 }
+
 .forms-inputs input {
   height: 50px;
   border: 2px solid #eee;
 }
+
 .forms-inputs input:focus {
   box-shadow: none;
   outline: none;
   border: 2px solid #000;
 }
+
 .btn {
   height: 50px;
 }
+
 .success-data {
   display: flex;
   flex-direction: column;
 }
+
 .bxs-badge-check {
   font-size: 90px;
 }
