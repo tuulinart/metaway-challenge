@@ -11,9 +11,9 @@
           <div class="form-data">
             <div class="forms-inputs mb-4">
               <span>Usuário</span>
-              <input autocomplete="off" type="text" v-model="email" :class="{
+              <input autocomplete="off" type="text" v-model="user" :class="{
                 'form-control': true,
-              }" @blur="emailBlured = true" />
+              }" @blur="userBlured = true" />
             </div>
             <div class="forms-inputs mb-4">
               <span>Senha</span>
@@ -42,9 +42,9 @@
 </template>
 
 <script>
+import api from "@/services/api.ts";
 import LoadingComponent from "../components/LoadingComponent.vue";
-import { SAVE_DATA_PROFILE, SAVE_TOKEN_STORAGE, showToast } from "../utils/utils.js";
-
+import { SAVE_DATA_PROFILE, SAVE_TOKEN_STORAGE, showToast, USER_INFO_STORAGE } from "../utils/utils.js";
 export default {
   name: "LoginView",
   components: {
@@ -53,8 +53,8 @@ export default {
   el: "#form1",
   data() {
     return {
-      email: "",
-      emailBlured: false,
+      user: "",
+      userBlured: false,
       valid: false,
       password: "",
       passwordBlured: false,
@@ -64,21 +64,21 @@ export default {
   },
   created() {
     let data = JSON.parse(localStorage.getItem(SAVE_DATA_PROFILE));
-    if (data?.email) this.email = data.email;
+    if (data?.user) this.user = data.user;
     if (data?.password) this.password = data.password;
   },
   methods: {
     validate() {
-      this.emailBlured = true;
+      this.userBlured = true;
       this.passwordBlured = true;
-      if (this.validEmail(this.email) && this.validPassword(this.password)) {
+      if (this.validuser(this.user) && this.validPassword(this.password)) {
         this.valid = true;
       }
     },
 
-    validEmail(email) {
+    validuser(user) {
       var re = /(.+)@(.+){2,}\.(.+){2,}/;
-      if (re.test(email.toLowerCase())) {
+      if (re.test(user.toLowerCase())) {
         return true;
       }
     },
@@ -92,19 +92,34 @@ export default {
     submit() {
       // this.validate();
       this.showLoading = true;
-      setTimeout(() => {
-        showToast("success", "Sucesso ao entrar!").then(() => {
-          if (this.checkSaveData) this.saveData();
-          localStorage.setItem(SAVE_TOKEN_STORAGE, JSON.stringify({ token: 'tokenaqui' }));
-          this.showLoading = false;
-          this.$router.push({ name: 'home' });
-          this.$store.commit('storeShowHeader', true);
+      let body = {
+        username: this.user,
+        password: this.password
+      };
+      const requestLoginApi = () => {
+        api.post("auth/login", body).then((response) => {
+          console.log(response);
+          showToast("success", "Sucesso ao entrar!").then(() => {
+            if (this.checkSaveData) this.saveData();
+            localStorage.setItem(USER_INFO_STORAGE, JSON.stringify({ id: response.data.id, types: response.data.tipos }));
+            localStorage.setItem(SAVE_TOKEN_STORAGE, JSON.stringify({ token: response.data.accessToken }));
+            this.showLoading = false;
+            this.$router.push({ name: 'home' });
+            this.$store.commit('storeShowHeader', true);
+          });
+        }).catch((err) => {
+          let message = "";
+          if (err.response.status === 401) message = "Usuário ou senha inválido!";
+          else message = "Tente novamente mais tarde!";
+          showToast("error", message).then(() => this.showLoading = false);
+          console.log(err);
         });
-      }, 1000);
+      }
+      requestLoginApi();
     },
 
     saveData() {
-      localStorage.setItem(SAVE_DATA_PROFILE, JSON.stringify({ email: this.email, password: this.password }));
+      localStorage.setItem(SAVE_DATA_PROFILE, JSON.stringify({ user: this.user, password: this.password }));
     },
   },
 };

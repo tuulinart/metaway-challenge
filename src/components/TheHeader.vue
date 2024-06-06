@@ -7,7 +7,7 @@
         <div class="col-2">
           <router-link :to="{ name: 'profile' }">Meu Cadastro</router-link>
         </div>
-        <div class="col-2">
+        <div class="col-2" v-if="accessUserTab">
           <router-link :to="{ name: 'users' }">Usuários</router-link>
         </div>
         <div class="col-2">
@@ -25,11 +25,22 @@
 </template>
 
 <script>
-import { SAVE_TOKEN_STORAGE } from "../utils/utils.js";
+import { SAVE_TOKEN_STORAGE, USER_INFO_STORAGE } from "../utils/utils.js";
 
 export default {
 
   name: "TheHeader",
+
+  data() {
+    return {
+      accessUserTab: false,
+    };
+  },
+
+  created() {
+    let userRoles = JSON.parse(localStorage.getItem(USER_INFO_STORAGE)).types;
+    this.accessUserTab = userRoles?.includes("ROLE_ADMIN") ? true : false;
+  },
 
   methods: {
     logout() {

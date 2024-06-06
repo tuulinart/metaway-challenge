@@ -3,6 +3,7 @@ import "vue3-toastify/dist/index.css";
 
 export const SAVE_DATA_PROFILE = "saveData";
 export const SAVE_TOKEN_STORAGE = "saveToken";
+export const USER_INFO_STORAGE = "userINFO";
 
 export function showToast(type, message) {
     return new Promise((resolve) => {
