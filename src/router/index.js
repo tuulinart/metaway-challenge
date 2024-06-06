@@ -1,6 +1,13 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
+import { SAVE_TOKEN_STORAGE } from "../utils/utils.js";
 
 const routes = [
+  {
+    path: '/:catchAll(.*)',
+    component: () => import('../views/HomeView.vue')
+  },
+
+
   {
     path: '/login',
     name: 'login',
@@ -36,6 +43,12 @@ const routes = [
 const router = createRouter({
   history: createWebHashHistory(),
   routes
+});
+
+router.beforeEach(async (to) => {
+  let authToken = JSON.parse(localStorage.getItem(SAVE_TOKEN_STORAGE));
+  if (!authToken?.token && to.name !== 'login') return { name: 'login' };
+  if (authToken?.token && to.name === 'login') return { name: 'home' }
 })
 
 export default router

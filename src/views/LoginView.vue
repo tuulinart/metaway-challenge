@@ -1,4 +1,9 @@
 <template>
+  <div class="container-fluid pt-5">
+    <div class="row d-flex align-items-center justify-content-center px-3">
+      <img class="img" src="../assets/logo-metaway.png" alt="">
+    </div>
+  </div>
   <div class="container mt-5">
     <div class="row d-flex justify-content-center">
       <div class="col-md-6">
@@ -37,10 +42,8 @@
 </template>
 
 <script>
-import { toast } from "vue3-toastify";
-import "vue3-toastify/dist/index.css";
 import LoadingComponent from "../components/LoadingComponent.vue";
-import { SAVE_DATA_PROFILE, SAVE_TOKEN_STORAGE } from "../utils/utils.js";
+import { SAVE_DATA_PROFILE, SAVE_TOKEN_STORAGE, showToast } from "../utils/utils.js";
 
 export default {
   name: "LoginView",
@@ -58,6 +61,11 @@ export default {
       checkSaveData: false,
       showLoading: false,
     };
+  },
+  created() {
+    let data = JSON.parse(localStorage.getItem(SAVE_DATA_PROFILE));
+    if (data?.email) this.email = data.email;
+    if (data?.password) this.password = data.password;
   },
   methods: {
     validate() {
@@ -82,48 +90,31 @@ export default {
     },
 
     submit() {
+      // this.validate();
       this.showLoading = true;
       setTimeout(() => {
-        this.showToast("success", "Sucesso ao entrar!");
-        if (this.checkSaveData) this.saveData();
-        localStorage.setItem(SAVE_TOKEN_STORAGE, JSON.stringify({ token: 'tokenaqui' }));
-        this.showLoading = false;
-        this.$router.push({ name: 'home' });
-      }, 4000);
-      // this.validate();
-      // if (this.valid) {
-      //   this.submitted = true;
-
-      // }
+        showToast("success", "Sucesso ao entrar!").then(() => {
+          if (this.checkSaveData) this.saveData();
+          localStorage.setItem(SAVE_TOKEN_STORAGE, JSON.stringify({ token: 'tokenaqui' }));
+          this.showLoading = false;
+          this.$router.push({ name: 'home' });
+          this.$store.commit('storeShowHeader', true);
+        });
+      }, 1000);
     },
 
     saveData() {
       localStorage.setItem(SAVE_DATA_PROFILE, JSON.stringify({ email: this.email, password: this.password }));
-    },
-
-    showToast(type, message) {
-      if (type == "warning") {
-        return toast.warning(message, {
-          autoClose: 1500,
-          position: "top-center",
-        });
-      } else if (type == "error") {
-        return toast.error(message, {
-          autoClose: 1500,
-          position: "top-center",
-        });
-      } else {
-        return toast.success(message, {
-          autoClose: 1500,
-          position: "top-center",
-        });
-      }
     },
   },
 };
 </script>
 
 <style scoped>
+.img {
+  width: 400px;
+}
+
 body {
   background: #000;
 }

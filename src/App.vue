@@ -1,5 +1,5 @@
 <template>
-  <TheHeader v-if="tokenValid" @logout="logout()" />
+  <TheHeader v-if="$store.state.showHeader" />
   <router-view />
 </template>
 
@@ -18,13 +18,8 @@ export default {
   created() {
     this.tokenValid = JSON.parse(localStorage.getItem(SAVE_TOKEN_STORAGE));
   },
-
-  methods: {
-
-    logout() {
-      localStorage.removeItem(SAVE_TOKEN_STORAGE);
-      this.$router.push({ name: 'login' });
-    }
+  beforeMount() {
+    if (this.tokenValid?.token) this.$store.commit('storeShowHeader', true);
   }
 };
 </script>
