@@ -12,9 +12,9 @@
             <tr v-for="(contact, index) in dataContacts" :key="index" class="row_texts">
               <!-- <td class="text_column" [attr.hover-tooltip]="contact"> -->
               <td class="text_column">
-                <div class="p-0 table__title--mobile">
-                  <span class="headerColumnName">{{ titlesHeader[0] }}:</span>
-                  {{ contact.id }}
+                <div class="p-0 table__title--mobile d-flex align-items-center justify-content-center">
+                  <div class="miniature_photo" :style="{ 'background-image': contact.img }">
+                  </div>
                 </div>
               </td>
               <td class="text_column">
@@ -59,8 +59,9 @@
               </td>
               <td class="text_column">
                 <div class="p-0 table__title--mobile">
-                  <span class="headerColumnName">{{ titlesHeader[7] }}:</span>
-                  Estrela aqui
+                  <span class="headerColumnName">{{ titlesHeader[7] }}: </span>
+                  <img v-if="contact.privado" class="star_favorite" src="../assets/star-solid.svg">
+                  <img v-else class="star_favorite" src="../assets/star-regular.svg">
                 </div>
               </td>
               <td class="text_column">
@@ -122,21 +123,38 @@ export default {
     };
   },
 
-  created() {
+  async created() {
     this.showLoading = true;
     // let idUser = JSON.parse(localStorage.getItem(USER_INFO_STORAGE)).id;
     let idUser = 1;
-    const requestContactsApi = () => {
-      api.get("contato/listar/" + idUser, {
-
-      }).then((response) => {
+    const requestContactsApi = async () => {
+      await api.get("contato/listar/" + idUser).then((response) => {
         this.dataContacts = response.data;
-        console.log(response);
       }).catch((err) => {
         console.log(err);
-      }).finally(() => this.showLoading = false);
+      });
     };
-    requestContactsApi();
+    const requestPhotosApi = async () => {
+      for (let index = 0; index < this.dataContacts.length; index++) {
+        const contact = this.dataContacts[index];
+        await api.get("foto/download/" + contact.usuario.id, {
+          headers: {
+            'content-type': 'image/png',
+            'accept': 'image/png'
+          },
+          responseType: 'blob'
+        }).then(async (response) => {
+          const urlCreator = window.URL || window.webkitURL;
+          let fileBlob = urlCreator.createObjectURL(response.data);
+          contact.img = `url("${fileBlob}")`;
+        }).catch((err) => {
+          console.log(err);
+        });
+      }
+    };
+    await requestContactsApi();
+    await requestPhotosApi();
+    this.showLoading = false
   }
 }
 </script>
@@ -386,6 +404,26 @@ export default {
       border: 2px solid #0090ff;
     }
   }
+}
+
+.miniature_photo {
+  width: 50px;
+  height: 50px;
+  border-radius: 100% !important;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.star_favorite{
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
 }
 
 .pagination {

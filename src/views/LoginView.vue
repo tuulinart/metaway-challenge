@@ -98,7 +98,6 @@ export default {
       };
       const requestLoginApi = () => {
         api.post("auth/login", body).then((response) => {
-          console.log(response);
           showToast("success", "Sucesso ao entrar!").then(() => {
             if (this.checkSaveData) this.saveData();
             localStorage.setItem(USER_INFO_STORAGE, JSON.stringify({ id: response.data.id, types: response.data.tipos }));
@@ -112,7 +111,6 @@ export default {
           if (err.response.status === 401) message = "Usuário ou senha inválido!";
           else message = "Tente novamente mais tarde!";
           showToast("error", message).then(() => this.showLoading = false);
-          console.log(err);
         });
       }
       requestLoginApi();

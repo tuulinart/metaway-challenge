@@ -5,7 +5,7 @@
 
 <script>
 import TheHeader from "./components/TheHeader.vue";
-import { SAVE_TOKEN_STORAGE } from "./utils/utils.js";
+import { SAVE_TOKEN_STORAGE, isTokenExpired } from "./utils/utils.js";
 export default {
   components: {
     TheHeader
@@ -19,7 +19,7 @@ export default {
     this.tokenValid = JSON.parse(localStorage.getItem(SAVE_TOKEN_STORAGE));
   },
   beforeMount() {
-    if (this.tokenValid?.token) this.$store.commit('storeShowHeader', true);
+    if (this.tokenValid?.token && !isTokenExpired(this.tokenValid?.token)) this.$store.commit('storeShowHeader', true);
   }
 };
 </script>

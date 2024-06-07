@@ -38,7 +38,7 @@ export default {
   },
 
   created() {
-    let userRoles = JSON.parse(localStorage.getItem(USER_INFO_STORAGE)).types;
+    let userRoles = JSON.parse(localStorage.getItem(USER_INFO_STORAGE))?.types;
     this.accessUserTab = userRoles?.includes("ROLE_ADMIN") ? true : false;
   },
 
