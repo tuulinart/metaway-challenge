@@ -17,7 +17,7 @@
           <router-link :to="{ name: 'contacts' }">Contatos</router-link>
         </div>
         <div class="col-2">
-          <button @click="logout()" type="button" class="btn btn-danger w-100">Logout</button>
+          <button @click="logout()" type="button" class="logout btn w-100">Logout</button>
         </div>
       </div>
     </div>
@@ -53,9 +53,19 @@ export default {
 </script>
 
 <style>
+nav {
+  background: #ffffff 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1607843137);
+}
+
 .col-2 {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.logout {
+  background-color: #c71e06 !important;
+  color: #FFF !important;
 }
 </style>

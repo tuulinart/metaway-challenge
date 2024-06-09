@@ -43,7 +43,7 @@ nav a {
 }
 
 nav a.router-link-exact-active {
-  color: #42b983;
+  color: #c71e06;
 }
 
 @import "~bootstrap/dist/css/bootstrap.css";
