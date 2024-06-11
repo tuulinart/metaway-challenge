@@ -29,6 +29,12 @@ const routes = [
     component: () => import('../views/ContactsView.vue')
   },
   {
+    path: '/contato/atualizar',
+    name: 'att_contact',
+    props: true,
+    component: () => import('../views/ChangeOrAddContact.vue')
+  },
+  {
     path: '/usuarios',
     name: 'users',
     component: () => import('../views/UsersView.vue')

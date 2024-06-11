@@ -53,9 +53,15 @@ export default {
 </script>
 
 <style>
+
 nav {
   background: #ffffff 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1607843137);
+  padding: 0px !important;
+  height: 8%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .col-2 {

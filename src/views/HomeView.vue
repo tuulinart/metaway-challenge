@@ -73,7 +73,6 @@
                     </td>
                     <td class="text_column">
                       <div class="p-0 table__title--mobile">
-                        <span class="headerColumnName">{{ titlesHeader[7] }}: </span>
                         <img @click="requestRemoveFavorite(contact, index)" v-if="contact.favorite"
                           class="star_favorite" src="../assets/star-solid.svg">
                         <img @click="requestSaveFavorite(contact, index)" v-else class="star_favorite"
@@ -83,7 +82,7 @@
                     <td class="text_column">
                       <div class="p-0 table__title--mobile">
                         <DynamicButton
-                          :buttonConfig="{ label: 'Editar', outlined: true, handler: () => this.editContact(contact) }" />
+                          :buttonConfig="{ label: 'Editar', outlined: true, handler: () => this.newOrAttContact(contact) }" />
                       </div>
                     </td>
 
@@ -98,9 +97,8 @@
               </table>
 
               <div v-if="showContactsArray.length > 0" class="pagination">
-                <button class="button_swap_page" :disabled="activeLink == pages[0]" @click="swapPage(false)">
-                  &lt;
-                </button>
+                <div class="button_swap_page left" :class="{ 'disabled': activeLink == pages[0] }"
+                  @click="activeLink == pages[0] ? null : swapPage(false)"></div>
                 <ul>
                   <li v-for="(page, index) in pages" :key="index" :class="{
                     'link': true,
@@ -109,9 +107,8 @@
                     {{ page }}
                   </li>
                 </ul>
-                <button class="button_swap_page" :disabled="activeLink == pages.length" @click="swapPage(true)">
-                  &gt;
-                </button>
+                <div class="button_swap_page right" :class="{ 'disabled': activeLink == numberPages }"
+                  @click="activeLink == numberPages ? null : swapPage(true)"></div>
 
                 <div class="buttonSwapIteensPeerPage">
                   <label for="itemsPerPage">Itens por página:</label>
@@ -153,13 +150,15 @@ export default {
       titlesHeader: ['', 'Id', 'Nome', 'CPF', 'Endereço', 'Email', 'Telefone', 'Favorito', '', ''],
       dataContacts: [],
       showContactsArray: [],
+      arraySearch: [],
       pages: [],
       activeLink: 1,
       itemsPerPage: 10,
+      numberPages: null,
       searchTextValue: "",
       configButtonSearch: { label: 'Pesquisar', handler: () => this.searchContacts(), customColor: { backgroundColor: "#c71e06" } },
       configButtonClearSearch: { label: 'Limpar', handler: () => this.clearSearch(), customColor: { backgroundColor: "#f7a01d" } },
-      configButtonNewContact : { label: '+', handler: () => this.newContact(), customColor: { backgroundColor: "#22bb33" } },
+      configButtonNewContact: { label: '+', handler: () => this.newOrAttContact(), customColor: { backgroundColor: "#22bb33" } },
       showButtonClearSearch: false,
     };
   },
@@ -167,7 +166,6 @@ export default {
   async created() {
     this.showLoading = true;
     let idUser = JSON.parse(localStorage.getItem(USER_INFO_STORAGE)).id;
-    // let idUser = 1;
     const requestContactsApi = async () => {
       await api.get("contato/listar/" + idUser).then((response) => {
         this.dataContacts = response.data;
@@ -210,7 +208,7 @@ export default {
     await requestFavoritesApi();
     await requestPhotosApi();
     this.getNumPages(this.dataContacts);
-    this.activePage(1);
+    this.showContactsArray = this.paginateArray(this.dataContacts, this.itemsPerPage, this.activeLink);
     this.showLoading = false;
   },
   methods: {
@@ -238,21 +236,41 @@ export default {
     swapPage(nextPage) {
       if (nextPage) this.activeLink += 1;
       else this.activeLink -= 1;
-      this.showContactsArray = this.paginateArray(this.dataContacts, this.itemsPerPage, this.activeLink);
+      let data = this.showButtonClearSearch ? this.arraySearch : this.dataContacts;
+      this.showContactsArray = this.paginateArray(data, this.itemsPerPage, this.activeLink);
+      this.getNumPages(data);
     },
 
     activePage(pageNumber) {
       this.activeLink = pageNumber;
-      this.showContactsArray = this.paginateArray(this.dataContacts, this.itemsPerPage, this.activeLink);
+      let data = this.showButtonClearSearch ? this.arraySearch : this.dataContacts;
+      this.showContactsArray = this.paginateArray(data, this.itemsPerPage, this.activeLink);
+      this.getNumPages(data);
     },
 
     getNumPages(data) {
       let array = data;
-      let numberPages = Math.ceil(array.length / this.itemsPerPage);
-      this.pages = Array.from({ length: numberPages }, (_, i) => i + 1);
+      this.numberPages = Math.ceil(array.length / this.itemsPerPage);
+      this.pages = Array.from({ length: this.numberPages }, (_, i) => i + 1);
+      this.pages = this.paginateLinks(this.numberPages);
+    },
+
+    paginateLinks(links) {
+      let newLinksArray = [];
+      links = Array.from({ length: links }, (_, i) => i + 1);
+      let max = 0;
+      this.activeLink == 1 ? max = this.activeLink + 2 : max = this.activeLink + 1;
+      let min = this.activeLink - 1;
+      links.forEach((link) => {
+        if (link >= min && link <= max) {
+          newLinksArray.push(link);
+        }
+      });
+      return newLinksArray;
     },
 
     paginateArray(array, page_size, page_number) {
+      console.log(array);
       return array.slice((page_number - 1) * page_size, page_number * page_size);
     },
 
@@ -266,59 +284,59 @@ export default {
           }
         }
       });
-      this.showContactsArray = newArray;
-      // this.getNumPages(this.dataContacts);
-      // this.activePage(1);
+      showToast('success', 'Pesquisa feita com sucesso!');
+      this.arraySearch = this.showContactsArray = newArray;
+      this.getNumPages(this.showContactsArray);
+      this.activePage(1);
     },
 
     validateObject(object) {
       if (
-        object.email.toString().toLowerCase().includes(this.searchTextValue) ||
-        object.id.toString().toLowerCase().includes(this.searchTextValue) ||
-        object.tag.toString().toLowerCase().includes(this.searchTextValue) ||
-        object.telefone.toString().toLowerCase().includes(this.searchTextValue) ||
-        object.pessoa.cpf.toString().toLowerCase().includes(this.searchTextValue) ||
-        object.pessoa.nome.toString().toLowerCase().includes(this.searchTextValue) ||
-        object.pessoa.endereco.bairro.toString().toLowerCase().includes(this.searchTextValue) ||
-        object.pessoa.endereco.cep.toString().toLowerCase().includes(this.searchTextValue) ||
-        object.pessoa.endereco.cidade.toString().toLowerCase().includes(this.searchTextValue) ||
-        object.pessoa.endereco.estado.toString().toLowerCase().includes(this.searchTextValue) ||
-        object.pessoa.endereco.logradouro.toString().toLowerCase().includes(this.searchTextValue) ||
-        object.pessoa.endereco.numero.toString().toLowerCase().includes(this.searchTextValue) ||
-        object.pessoa.endereco.pais.toString().toLowerCase().includes(this.searchTextValue) ||
-        object.email.toString().toLowerCase().includes(this.searchTextValue)) return true;
+        object?.email?.toString().toLowerCase().includes(this.searchTextValue) ||
+        object?.id?.toString().toLowerCase().includes(this.searchTextValue) ||
+        object?.tag?.toString().toLowerCase().includes(this.searchTextValue) ||
+       object?.telefone?.toString().toLowerCase().includes(this.searchTextValue) ||
+       object?.pessoa?.cpf?.toString().toLowerCase().includes(this.searchTextValue) ||
+       object?.pessoa?.nome?.toString().toLowerCase().includes(this.searchTextValue) ||
+       object?.pessoa?.endereco?.bairro?.toString().toLowerCase().includes(this.searchTextValue) ||
+       object?.pessoa?.endereco?.cep?.toString().toLowerCase().includes(this.searchTextValue) ||
+       object?.pessoa?.endereco?.cidade?.toString().toLowerCase().includes(this.searchTextValue) ||
+       object?.pessoa?.endereco?.estado?.toString().toLowerCase().includes(this.searchTextValue) ||
+       object?.pessoa?.endereco?.logradouro?.toString().toLowerCase().includes(this.searchTextValue) ||
+       object?.pessoa?.endereco?.numero?.toString().toLowerCase().includes(this.searchTextValue) ||
+       object?.pessoa?.endereco?.pais?.toString().toLowerCase().includes(this.searchTextValue) ||
+       object?.email?.toString().toLowerCase().includes(this.searchTextValue)) return true;
       return false;
     },
 
     clearSearch() {
       this.showButtonClearSearch = false;
       this.searchTextValue = "";
+      this.arraySearch = [];
       this.getNumPages(this.dataContacts);
       this.activePage(1);
-    },
-
-    editContact(contact) {
-      console.log(contact);
     },
 
     deleteContact(contact, index) {
       api.delete("contato/remover/" + contact.id).then(() => {
         showToast("success", "Sucesso ao remover contato!");
-        this.showContactsArray.splice(0, index);
+        this.showContactsArray.splice(1, index);
       }).catch((err) => {
         showToast("error", "Erro ao remover contato!");
         console.log(err);
       });
     },
 
-    newContact() {
-      console.log('aq');
+    newOrAttContact(contact) {
+      this.$store.commit('storeContact', contact);
+      this.$router.push({ name: 'att_contact' });
     }
   },
   watch: {
     itemsPerPage() {
-      this.getNumPages(this.dataContacts);
-      this.activePage(1);
+      let array = this.showButtonClearSearch ? this.arraySearch : this.dataContacts;
+      this.getNumPages(array);
+      this.showContactsArray = this.paginateArray(array, this.itemsPerPage, this.activeLink);
     }
   }
 }
@@ -326,220 +344,8 @@ export default {
 
 <style>
 .body {
-  background-color: #eaf2ff;
   padding: 30px 12px;
-
-  @media (min-width: 850px) {
-    .dynamic_table {
-      width: 100%;
-    }
-
-    .headerColumnName {
-      display: none;
-    }
-
-    tr {
-      border-style: hidden;
-
-      :first-child {
-        border-top-left-radius: 12px;
-        border-bottom-left-radius: 12px;
-      }
-
-      :last-child {
-        border-top-right-radius: 12px;
-        border-bottom-right-radius: 12px;
-        text-align: center !important;
-      }
-    }
-
-
-    thead {
-      background: #e3e9ef;
-    }
-
-
-    tbody::before {
-      content: "";
-      display: block;
-      height: 5px;
-    }
-
-    .row_title {
-      .title_column {
-        text-align: center;
-        letter-spacing: 0px;
-        opacity: 1;
-        color: #818e94;
-        font-size: 14px;
-        font-weight: bold;
-      }
-    }
-
-    .row_texts {
-      .text_column {
-        text-align: center;
-        max-width: 20vw;
-
-        & div {
-          opacity: 1;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          font-weight: 400;
-          color: #4f4f4f;
-          font-size: 13px;
-        }
-      }
-
-      .padding_top {
-        padding-top: 15px;
-      }
-
-      .button_end_table {
-        background-color: #fff;
-        border-radius: 8px;
-        opacity: 1;
-        padding: 0.5vh 1vw;
-        text-align: center;
-        font-weight: 600;
-        height: 45px;
-
-        @media screen and (max-width: 500px) {
-          font-size: 14px;
-        }
-      }
-
-      .rede_mulher_color {
-        border: 2px solid #541b82;
-        color: #895bf1;
-
-        &:hover {
-          color: #fff;
-          background: #895bf1;
-          border: 2px solid #895bf1;
-        }
-      }
-
-      .rj190_color {
-        border: 2px solid #508ff4;
-        color: #0090ff;
-
-        &:hover {
-          color: #fff;
-          background: #0090ff;
-          border: 2px solid #0090ff;
-        }
-      }
-
-      .rede_escola_color {
-        border: 2px solid #508ff4;
-        color: #0090ff;
-
-        &:hover {
-          color: #fff;
-          background: #0090ff;
-          border: 2px solid #0090ff;
-        }
-      }
-
-      &:hover {
-        background-color: #f4f4f4;
-      }
-    }
-
-    .no_data {
-      position: absolute;
-      left: 52%;
-      letter-spacing: 0px;
-      color: #4f4f4f;
-      opacity: 1;
-      margin-top: 10px;
-    }
-
-  }
-
-  @media (max-width: 849px) {
-
-    table {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      table-layout: fixed;
-    }
-
-    th {
-      display: none;
-    }
-
-    tr {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      width: 100%;
-      border-radius: 8px;
-
-      border: 1px solid #e3e9ef;
-      margin-top: 5px;
-      margin-bottom: 5px;
-
-      td {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        white-space: normal;
-        border-bottom: 1px solid #e3e9ef;
-
-        &:last-child {
-          border-bottom: none;
-        }
-      }
-    }
-
-    tr:nth-of-type(2n) {
-      background: #e3e9ef;
-
-      & td {
-        border-bottom: 1px solid white;
-
-        &:last-child {
-          border-bottom: none;
-        }
-      }
-    }
-
-    tbody {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      border-radius: 16px;
-      padding-bottom: 20px;
-    }
-
-    .headerColumnName {
-      content: attr(data-cell) ":";
-      font-weight: bold;
-      text-transform: capitalize;
-      padding-right: 3px;
-    }
-
-    .button_end_table {
-      background-color: #fff;
-      border-radius: 8px;
-      opacity: 1;
-      padding: 1vh 24px;
-      text-align: center;
-      font-weight: 600;
-
-      @media screen and (max-width: 500px) {
-        font-size: 14px;
-      }
-    }
-  }
+  height: 100%;
 
   .delete_contact {
     background-color: #4f4f4f;
@@ -574,268 +380,6 @@ export default {
     width: 22px;
     height: 22px;
     cursor: pointer;
-  }
-
-  .pagination {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #4f4f4f;
-    padding: 10px 40px;
-    border-radius: 6px;
-
-    ul {
-      margin: 0 5px;
-      padding: 0px;
-    }
-
-    ul li {
-      display: inline-block;
-      background: #fff;
-      width: 22px;
-      height: 22px;
-      border-radius: 8px;
-      text-align: center;
-      font-size: 12px;
-      font-weight: 400;
-      line-height: 21px;
-      cursor: pointer;
-    }
-
-    ul li.active {
-      background: #0090ff;
-      color: white;
-    }
-
-    .button_swap_page {
-      border: none;
-      background: #fff;
-      color: #7d8185;
-      padding: 0px;
-      margin-top: 4px;
-      font-weight: 0;
-      font-family: "Poppins";
-
-      &:disabled {
-        color: #e3e9ef;
-      }
-    }
-
-    .buttonSwapIteensPeerPage {
-      position: absolute;
-      left: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 20px;
-
-      @media (max-width: 849px) {
-        label {
-          display: none;
-        }
-      }
-    }
-  }
-
-  .table__title--mobile {
-    @media screen and (max-width: 500px) {
-      &:first-child {
-        font-size: 14px;
-      }
-
-      font-size: 12px;
-    }
-  }
-
-  @media (min-width: 850px) {
-    .box-header--table {
-      background: #ffffff 0% 0% no-repeat padding-box;
-      box-shadow: 0px 3px 6px #00000029;
-      border-radius: 16px;
-      border: 2px solid transparent;
-      opacity: 1;
-      padding: 20px;
-
-      .subheader {
-        display: flex;
-        justify-content: space-between;
-        padding-bottom: 15px;
-
-        .subtitle {
-          text-align: left;
-          letter-spacing: 0px;
-          color: #4f4f4f;
-          opacity: 1;
-          text-wrap: nowrap;
-          font-size: 18px;
-
-          @media screen and (max-width: 500px) {
-            font-size: 16px;
-          }
-        }
-
-        .left {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 20px;
-
-          @media screen and (max-width: 500px) {
-            min-width: 100%;
-            flex-direction: column;
-            align-items: start;
-            justify-content: start;
-          }
-
-          .search_box {
-
-            @media screen and (max-width: 500px) {
-              width: 100%;
-            }
-
-            input {
-              border: 1px solid #d3d3d3;
-              border-radius: 8px;
-              padding-left: 42px !important;
-              padding: 10px;
-              background-repeat: no-repeat;
-              background-position: 15px;
-              background-origin: padding-box;
-              background-image: url("../assets/lupe.svg");
-              width: 250px;
-              text-align: left;
-              font-weight: 400;
-              color: #818e94;
-              opacity: 1;
-
-              &::placeholder {
-                width: 100%;
-
-                @media screen and (max-width: 500px) {
-                  font-size: 14px;
-                }
-              }
-            }
-
-            textarea:focus,
-            input:focus {
-              outline: none;
-            }
-
-            img {
-              background-color: red;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  @media (max-width: 849px) {
-    .box-header--table {
-      background: #ffffff 0% 0% no-repeat padding-box;
-      box-shadow: 0px 3px 6px #00000029;
-      border-radius: 16px;
-      border: 2px solid transparent;
-      opacity: 1;
-      padding: 20px;
-
-      .subheader {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        padding-bottom: 15px;
-
-        @media screen and (max-width: 500px) {
-          align-items: start;
-
-          & select {
-            font-size: 14px !important;
-            height: 48px;
-          }
-        }
-
-        .subtitle {
-          text-align: left;
-          letter-spacing: 0px;
-          color: #4f4f4f;
-          opacity: 1;
-          text-wrap: nowrap;
-          font-size: 18px;
-          padding-bottom: 10px;
-
-          @media screen and (max-width: 500px) {
-            font-size: 16px;
-          }
-        }
-
-        .left {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 10px;
-
-          @media screen and (max-width: 500px) {
-            min-width: 100%;
-            flex-direction: column;
-            align-items: start;
-            justify-content: start;
-          }
-
-          .search_box {
-
-            @media screen and (max-width: 500px) {
-              min-width: 100%;
-            }
-
-            input {
-              border: 1px solid #d3d3d3;
-              border-radius: 8px;
-              padding-left: 32px !important;
-              padding: 10px;
-              background-repeat: no-repeat;
-              background-position: 5px;
-              background-image: url("../assets/lupe.svg");
-
-              @media screen and (max-width: 500px) {
-                background-position: 10px;
-              }
-
-              background-origin: padding-box;
-              text-align: left;
-              width: 100%;
-              font-weight: 400;
-              color: #818e94;
-              opacity: 1;
-
-              &::placeholder {
-                width: 100%;
-
-                @media screen and (max-width: 500px) {
-                  font-size: 14px;
-                }
-              }
-            }
-
-            textarea:focus,
-            input:focus {
-              outline: none;
-            }
-
-            img {
-              background-color: red;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  .search_box input {
-    @media screen and (max-width: 500px) {
-      font-size: 14px !important;
-    }
   }
 }
 </style>

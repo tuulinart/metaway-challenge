@@ -1,11 +1,15 @@
 <template>
   <TheHeader v-if="$store.state.showHeader" />
-  <router-view />
+  <div class="routerView" :class="{ 'h-100': !$store.state.showHeader }">
+    <router-view />
+  </div>
+
 </template>
 
 <script>
 import TheHeader from "./components/TheHeader.vue";
 import { SAVE_TOKEN_STORAGE, isTokenExpired } from "./utils/utils.js";
+import "@/assets/global.css"
 export default {
   components: {
     TheHeader
@@ -25,12 +29,24 @@ export default {
 </script>
 
 <style>
+html,
+body {
+  height: 100%;
+}
+
+.routerView {
+  max-height: 92%;
+  min-height: 92%;
+  background-color: #eaf2ff;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  height: 100%;
 }
 
 nav {
