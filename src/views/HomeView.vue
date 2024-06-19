@@ -2,7 +2,7 @@
   <div class="body">
     <div class="box-header--table">
       <div class="subheader">
-        <span class="subtitle">Contatos</span>
+        <span class="subtitle">Contatos / Favoritos</span>
         <div class="left">
           <div class="search_box">
             <input type="text" v-model="searchTextValue" placeholder="Pesquise por uma palavra chave">
@@ -27,8 +27,7 @@
                     <!-- <td class="text_column" [attr.hover-tooltip]="contact"> -->
                     <td class="text_column">
                       <div class="p-0 table__title--mobile d-flex align-items-center justify-content-center">
-                        <div class="miniature_photo" :style="{ 'background-image': contact.img }">
-                        </div>
+                        <div class="miniature_photo" :style="{ 'background-image': contact.img }"></div>
                       </div>
                     </td>
                     <td class="text_column">
@@ -170,6 +169,7 @@ export default {
       await api.get("contato/listar/" + idUser).then((response) => {
         this.dataContacts = response.data;
       }).catch((err) => {
+        showToast("error", "Erro ao buscar contatos!");
         console.log(err);
       });
     };
@@ -183,6 +183,7 @@ export default {
         }
         this.dataContacts.sort((a, b) => a.id - b.id);
       }).catch((err) => {
+        showToast("error", "Erro ao buscar favoritos!");
         console.log(err);
       });
     };
@@ -200,6 +201,7 @@ export default {
           let fileBlob = urlCreator.createObjectURL(response.data);
           contact.img = `url("${fileBlob}")`;
         }).catch((err) => {
+          showToast("error", "Erro ao buscar fotos!");
           console.log(err);
         });
       }
@@ -270,7 +272,6 @@ export default {
     },
 
     paginateArray(array, page_size, page_number) {
-      console.log(array);
       return array.slice((page_number - 1) * page_size, page_number * page_size);
     },
 

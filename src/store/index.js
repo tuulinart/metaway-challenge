@@ -4,6 +4,7 @@ export default createStore({
   state: {
     showHeader: false,
     contact: {},
+    profile: {},
   },
   getters: {
   },
@@ -13,6 +14,9 @@ export default createStore({
     },
     storeContact(state, data) {
       state.contact = data;
+    },
+    storeProfile(state, data) {
+      state.profile = data;
     },
   },
   actions: {

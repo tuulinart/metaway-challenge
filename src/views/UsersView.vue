@@ -148,6 +148,7 @@ export default {
       }).then((response) => {
         this.dataUsers = response.data;
       }).catch((err) => {
+        showToast("error", "Erro ao buscar usuarios!");
         console.log(err);
       });
     };

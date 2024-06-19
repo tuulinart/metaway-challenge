@@ -164,6 +164,7 @@ export default {
         this.dataContacts.sort((a, b) => a.id - b.id);
       }).catch((err) => {
         console.log(err);
+        showToast("error", "Erro ao buscar contatos!");
       });
     };
     const requestPhotosApi = async () => {
@@ -181,6 +182,7 @@ export default {
           contact.img = `url("${fileBlob}")`;
         }).catch((err) => {
           console.log(err);
+          showToast("error", "Erro ao buscar fotos!");
         });
       }
     };
@@ -228,7 +230,6 @@ export default {
     },
 
     paginateArray(array, page_size, page_number) {
-      console.log(array);
       return array.slice((page_number - 1) * page_size, page_number * page_size);
     },
 

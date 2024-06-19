@@ -35,8 +35,7 @@ body {
 }
 
 .routerView {
-  max-height: 92%;
-  min-height: 92%;
+  height: 92%;
   background-color: #eaf2ff;
 }
 

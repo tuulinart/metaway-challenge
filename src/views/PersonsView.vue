@@ -148,10 +148,10 @@ export default {
       await api.post("pessoa/pesquisar", {
         nome: ""
       }).then((response) => {
-        console.log(response);
         this.dataPersons = response.data;
         this.dataPersons.sort((a, b) => a.id - b.id);
       }).catch((err) => {
+        showToast("error", "Erro ao buscar pessoas!");
         console.log(err);
       });
     };

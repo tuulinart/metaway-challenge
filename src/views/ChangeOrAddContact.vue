@@ -5,10 +5,10 @@
             <div class="pb-5">
                 <div class="title-box">
                     <div class="row border-bottom-0 pb-0">
-                        <div class="div-col-title col-lg-6 col-xl-6 col-12">
+                        <div class="div-col-title col-xxl-6 col-xl-6  col-lg-6 col-12">
                             <p class="title portal-body__title mb-0">Contato</p>
                         </div>
-                        <div class="div-col-back col-lg-6 col-xl-6 col-12">
+                        <div class="div-col-back col-xxl-6 col-xl-6  col-lg-6 col-12">
                             <DynamicButton :buttonConfig="configButtonBack" />
                         </div>
                     </div>
@@ -16,61 +16,85 @@
                 <div class="portal-body__add-annoucement-card--bigger-padding">
                     <div class="mb-3">
                         <label class="add-user__input-label d-block mb-1" for="name">Nome*</label>
-                        <input class="w-100 px-10" type="text" id="name" v-model="name" autocomplete="off" />
+                        <input class="w-100 px-10" type="text" id="name" v-model="contact.pessoa.nome"
+                            autocomplete="off" />
                     </div>
                     <div class="mb-3">
                         <div class="row">
-                            <div class="col-lg-6 col-xl-6 col-12">
+                            <div class="col-xxl-6 col-xl-6  col-lg-6 col-12 mb-xxl-0 mb-xl-0 mb-lg-0 mb-3">
                                 <label class="add-user__input-label d-block mb-1" for="cpf">CPF*</label>
-                                <input class="w-100 px-10" type="text" id="cpf" maxlength="14" v-model="cpf"
-                                    autocomplete="off" />
+                                <input class="w-100 px-10" type="text" id="cpf" maxlength="14"
+                                    v-model="contact.pessoa.cpf" autocomplete="off" />
                             </div>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="row">
-                            <div class="margin-bottom col-lg-6 col-xl-6 col-12">
+
+                            <div class="margin-bottom col-xxl-6 col-xl-6  col-lg-6 col-12">
                                 <label class="add-user__input-label d-block mb-1" for="phone">Telefone</label>
-                                <input class="w-100 px-10" type="tel" id="phone" maxlength="13" v-model="phone"
-                                    autocomplete="off" />
-                            </div>
-                            <div class="col-lg-6 col-xl-6 col-12">
-                                <label class="add-user__input-label d-block mb-1" for="cellphone">Celular*</label>
-                                <input class="w-100 px-10" type="tel" id="cellphone" maxlength="14" v-model="cellphone"
-                                    autocomplete="off" />
+                                <input class="w-100 px-10" type="tel" id="phone" maxlength="13"
+                                    v-model="contact.telefone" autocomplete="off" />
                             </div>
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="add-user__input-label d-block mb-1" for="email">E-mail</label>
-                        <input class="w-100 px-10" type="email" id="email" v-model="email" autocomplete="off" />
+                        <div class="row">
+                            <div class="col-12">
+                                <label class="add-user__input-label d-block mb-1" for="email">E-mail</label>
+                                <input class="w-100 px-10" type="email" id="email" v-model="contact.email"
+                                    autocomplete="off" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <span>Endereço</span>
+
+                    <div class="mb-3">
+                        <div class="row">
+                            <div class="col-xxl-6 col-xl-6  col-lg-6 col-12 mb-xxl-0 mb-xl-0 mb-lg-0 mb-3">
+                                <label class="add-user__input-label d-block mb-1" for="cpf">CEP*</label>
+                                <input class="w-100 px-10" type="text" id="cpf" maxlength="14"
+                                    v-model="contact.pessoa.endereco.cep" autocomplete="off" />
+                            </div>
+
+                            <div class="col-xxl-6 col-xl-6  col-lg-6 col-12">
+                                <label class="add-user__input-label d-block mb-1" for="phone">Estado</label>
+                                <input class="w-100 px-10" type="tel" id="phone" maxlength="13"
+                                    v-model="contact.pessoa.endereco.estado" autocomplete="off" />
+                            </div>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <div class="row">
-                            <!-- <div class="margin-bottom col-lg-6 col-xl-6 col-12">
-                                    <label class="add-user__input-label mb-1" for="organ">Orgão*</label>
-                                    <select class="form-select" id="organ" v-model="organ">
-                                        <option selected value="0">Selecione</option>
-                                        @for(organ of annoucement.organs; track organ.id){
-                                        <option [value]="organ.id">{{ organ.name }}</option>
-                                        }
-                                    </select>
-                                </div> -->
-                            <!-- <div class="col-lg-6 col-xl-6 col-12">
-                                    <label class="add-user__input-label mb-1" for="profile">Perfil*</label>
-                                    <select class="form-select" id="profile" v-model="profile">
-                                        <option selected value="0">Selecione</option>
-                                        @for(profile of annoucement.profiles; track profile.id){
-                                        <option [value]="profile.id">{{ profile.name }}</option>
-                                        }
-                                    </select>
-                                </div> -->
+                            <div class="col-xxl-6 col-xl-6  col-lg-6 col-12 mb-xxl-0 mb-xl-0 mb-lg-0 mb-3">
+                                <label class="add-user__input-label d-block mb-1" for="cpf">Cidade*</label>
+                                <input class="w-100 px-10" type="text" id="cpf" maxlength="14"
+                                    v-model="contact.pessoa.endereco.cidade" autocomplete="off" />
+                            </div>
+
+                            <div class="col-xxl-6 col-xl-6  col-lg-6 col-12">
+                                <label class="add-user__input-label d-block mb-1" for="phone">Bairro</label>
+                                <input class="w-100 px-10" type="tel" id="phone" maxlength="13"
+                                    v-model="contact.pessoa.endereco.bairro" autocomplete="off" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <div class="col-xxl-6 col-xl-6  col-lg-6 col-12 mb-xxl-0 mb-xl-0 mb-lg-0 mb-3">
+                                <label class="add-user__input-label d-block mb-1" for="cpf">Logradouro*</label>
+                                <input class="w-100 px-10" type="text" id="cpf" maxlength="14"
+                                    v-model="contact.pessoa.endereco.logradouro" autocomplete="off" />
+                            </div>
+
+                            <div class="col-xxl-6 col-xl-6  col-lg-6 col-12">
+                                <label class="add-user__input-label d-block mb-1" for="phone">Número</label>
+                                <input class="w-100 px-10" type="tel" id="phone" maxlength="13"
+                                    v-model="contact.pessoa.endereco.numero" autocomplete="off" />
+                            </div>
                         </div>
                     </div>
                     <div class="d-flex justify-content-center">
                         <button @click="saveContact()" class="mt-30 save-button" type="submit"
                             :disabled="this.validForm()">
-                            Salvar
+                            {{ labelButton }}
                         </button>
                     </div>
                 </div>
@@ -99,6 +123,7 @@ export default {
     },
     created() {
         this.contact = this.$store.state.contact;
+        this.labelButton = this.$store.state.contact ? 'Atualizar' : 'Criar';
     },
 
     methods: {
@@ -203,6 +228,7 @@ input {
     border: 1px solid #d3d3d3;
     border-radius: 8px;
     outline: none;
+    padding-left: 12px;
 }
 
 select {
@@ -235,12 +261,6 @@ select {
     &:disabled {
         background: #CCCCCC;
         cursor: not-allowed;
-    }
-}
-
-.margin-bottom {
-    @media (max-width: 991px) {
-        margin-bottom: 20px;
     }
 }
 </style>
