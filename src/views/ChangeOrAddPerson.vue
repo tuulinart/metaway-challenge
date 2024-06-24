@@ -6,7 +6,7 @@
                 <div class="title-box">
                     <div class="row border-bottom-0 pb-0">
                         <div class="div-col-title col-xxl-6 col-xl-6  col-lg-6 col-12">
-                            <p class="title mb-0">Contato</p>
+                            <p class="title mb-0">Pessoa</p>
                         </div>
                         <div class="div-col-back col-xxl-6 col-xl-6  col-lg-6 col-12">
                             <DynamicButton :buttonConfig="configButtonBack" />
@@ -23,7 +23,7 @@
                         <div class="row">
                             <div class="col-xxl-6 col-xl-6  col-lg-6 col-12 mb-xxl-0 mb-xl-0 mb-lg-0 mb-3">
                                 <label class="add-contact__input-label d-block mb-1" for="cpf">CPF*</label>
-                                <input class="w-100 px-10" type="tel" id="cpf" v-maska="'###.###.###-##'"
+                                <input class="w-100 px-10" type="text" id="cpf" maxlength="14"
                                     v-model="contact.pessoa.cpf" autocomplete="off" />
                             </div>
 
@@ -50,7 +50,7 @@
                         <div class="row">
                             <div class="col-xxl-6 col-xl-6  col-lg-6 col-12 mb-xxl-0 mb-xl-0 mb-lg-0 mb-3">
                                 <label class="add-contact__input-label d-block mb-1" for="cpf">CEP*</label>
-                                <input class="w-100 px-10" type="tel" id="cpf" v-maska="'##.###-###'"
+                                <input class="w-100 px-10" type="text" id="cpf" maxlength="14"
                                     v-model="contact.pessoa.endereco.cep" autocomplete="off" />
                             </div>
 

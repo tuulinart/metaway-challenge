@@ -2,20 +2,24 @@
   <nav>
     <div class="container-fluid container-fluid-xxl">
       <div class="row">
-        <div class="col-2"><router-link :to="{ name: 'home' }">Home</router-link>
+        <div class="col-2" :class="{ 'col-3': !accessUserTab }"><router-link :to="{ name: 'home' }">Home</router-link>
         </div>
         <div class="col-2" v-if="accessUserTab">
           <router-link :to="{ name: 'users' }">Usuários</router-link>
         </div>
-        <div class="col-2">
+        <div class="col-2" :class="{ 'col-3': !accessUserTab }">
           <router-link :to="{ name: 'persons' }">Pessoas</router-link>
         </div>
-        <div class="col-2">
+        <div class="col-2" :class="{ 'col-3': !accessUserTab }">
           <router-link :to="{ name: 'contacts' }">Contatos</router-link>
         </div>
-        <div class="col-3 profile_div">
+        <div class="col-2 profile_div">
           <span @click="navigation()">{{ profile.nome }}</span>
           <div @click="navigation()" class="miniature_photo" :style="{ 'background-image': profile?.img }"></div>
+        </div>
+
+        <div class="col-2 d-flex justify-content-center align-items-center">
+          <div @click="logout()" class="logout_img"></div>
         </div>
 
       </div>
@@ -192,7 +196,7 @@ nav {
 }
 
 .container-fluid-xxl {
-  @media screen and (max-width: 850px) {
+  @media screen and (max-width: 1299px) {
     display: none !important;
   }
 }
@@ -244,7 +248,7 @@ nav {
   align-items: center;
   justify-content: start;
 
-  @media screen and (min-width: 851px) {
+  @media screen and (min-width: 1300px) {
     display: none !important;
   }
 
@@ -287,7 +291,7 @@ nav {
   z-index: 999;
   transition: all 0.5s;
 
-  @media screen and (min-width: 851px) {
+  @media screen and (min-width: 1300px) {
     display: none !important;
   }
 }
@@ -353,7 +357,7 @@ nav {
       color: #4D4F5C;
     }
 
-    @media (max-width: 849px) {
+    @media (max-width: 1299px) {
       span {
         font-size: 14px;
       }

@@ -24,14 +24,14 @@
             <div class="row">
               <div class="col-lg-6 col-xl-6 col-12">
                 <label class="add-user__input-label d-block mb-1" for="cpf">CPF</label>
-                <input class="w-100 px-10" type="text" id="cpf" maxlength="14" v-model="this.profile.usuario.cpf"
-                  autocomplete="off" />
+                <input class="w-100 px-10" type="text" id="cpf" v-maska="'###.###.###-##'"
+                  v-model="this.profile.usuario.cpf" autocomplete="off" />
               </div>
 
               <div class="col-lg-6 col-xl-6 col-12">
                 <label class="add-user__input-label d-block mb-1" for="phone">Telefone</label>
-                <input class="w-100 px-10" type="tel" id="phone" maxlength="13" v-model="this.profile.usuario.telefone"
-                  autocomplete="off" />
+                <input class="w-100 px-10" type="tel" id="phone" v-maska="'(##) #####-####'"
+                  v-model="this.profile.usuario.telefone" autocomplete="off" />
               </div>
             </div>
           </div>

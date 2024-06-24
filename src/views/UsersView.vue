@@ -27,45 +27,45 @@
                   <tr v-for="(user, index) in showUsersArray" :key="index" class="row_texts">
                     <!-- <td class="text_column" [attr.hover-tooltip]="contact"> -->
                     <td class="text_column">
+                      <span class="headerColumnName">{{ titlesHeader[0] }}:</span>
                       <div class="p-0 table__title--mobile">
-                        <span class="headerColumnName">{{ titlesHeader[1] }}:</span>
                         {{ user.id }}
                       </div>
                     </td>
                     <td class="text_column">
                       <div class="p-0 table__title--mobile">
-                        <span class="headerColumnName">{{ titlesHeader[2] }}:</span>
+                        <span class="headerColumnName">{{ titlesHeader[1] }}:</span>
                         {{ user.nome }}
                       </div>
                     </td>
                     <td class="text_column">
                       <div class="p-0 table__title--mobile">
-                        <span class="headerColumnName">{{ titlesHeader[3] }}:</span>
+                        <span class="headerColumnName">{{ titlesHeader[2] }}:</span>
                         {{ user.cpf }}
                       </div>
                     </td>
                     <td class="text_column">
                       <div class="p-0 table__title--mobile">
-                        <span class="headerColumnName">{{ titlesHeader[4] }}:</span>
+                        <span class="headerColumnName">{{ titlesHeader[3] }}:</span>
                         {{ user.email }}
                       </div>
                     </td>
                     <td class="text_column">
                       <div class="p-0 table__title--mobile">
-                        <span class="headerColumnName">{{ titlesHeader[5] }}:</span>
+                        <span class="headerColumnName">{{ titlesHeader[4] }}:</span>
                         {{ user.telefone }}
                       </div>
                     </td>
                     <td class="text_column">
                       <div class="p-0 table__title--mobile">
-                        <span class="headerColumnName">{{ titlesHeader[6] }}:</span>
+                        <span class="headerColumnName">{{ titlesHeader[5] }}:</span>
                         {{ user.username }}
                       </div>
                     </td>
                     <td class="text_column">
                       <div class="p-0 table__title--mobile">
                         <DynamicButton
-                          :buttonConfig="{ label: 'Editar', outlined: true, handler: () => this.newOrAttContact(contact) }" />
+                          :buttonConfig="{ label: 'Editar', outlined: true, handler: () => this.newOrAttUser(user) }" />
                       </div>
                     </td>
                   </tr>
@@ -134,7 +134,7 @@ export default {
       searchTextValue: "",
       configButtonSearch: { label: 'Pesquisar', handler: () => this.searchUsers(), customColor: { backgroundColor: "#c71e06" } },
       configButtonClearSearch: { label: 'Limpar', handler: () => this.clearSearch(), customColor: { backgroundColor: "#f7a01d" } },
-      configButtonNewContact: { label: '+', handler: () => this.newOrAttContact(), customColor: { backgroundColor: "#22bb33" } },
+      configButtonNewContact: { label: '+', handler: () => this.newOrAttUser(), customColor: { backgroundColor: "#22bb33" } },
       showButtonClearSearch: false,
     };
   },
@@ -245,9 +245,9 @@ export default {
       });
     },
 
-    newOrAttContact(contact) {
-      this.$store.commit('storeContact', contact);
-      this.$router.push({ name: 'att_contact' });
+    newOrAttUser(user) {
+      if (user) return this.$router.push(`/usuario/atualizar/${user.id}`);
+      return this.$router.push(`/usuario/atualizar/`);
     }
   },
   watch: {

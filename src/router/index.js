@@ -24,6 +24,12 @@ const routes = [
     component: () => import('../views/PersonsView.vue')
   },
   {
+    path: '/pessoa/atualizar',
+    name: 'att_person',
+    props: true,
+    component: () => import('../views/ChangeOrAddPerson.vue')
+  },
+  {
     path: '/contatos',
     name: 'contacts',
     component: () => import('../views/ContactsView.vue')
@@ -38,6 +44,12 @@ const routes = [
     path: '/usuarios',
     name: 'users',
     component: () => import('../views/UsersView.vue')
+  },
+  {
+    path: '/usuario/atualizar/:id?',
+    name: 'att_user',
+    props: true,
+    component: () => import('../views/ChangeOrAddUser.vue')
   },
   {
     path: '/perfil',
